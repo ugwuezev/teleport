@@ -1,0 +1,10 @@
+# Aggregates the Nginx app for `kubectl apply -k nginx/` and Argo CD.
+# The namespace is created out-of-band (onboarding for the manual path; Argo CD
+# CreateNamespace for GitOps), so the least-privilege user only applies namespaced resources.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - certificate.yaml
+  - configmap.yaml
+  - deployment.yaml
+  - service.yaml

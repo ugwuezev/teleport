@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="840" viewBox="0 0 1480 840" font-family="Segoe UI, Calibri, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,5 L0,9 Z" fill="#1D4ED8"/>
+    </marker>
+    <marker id="arrowT" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,1 L9,5 L0,9 Z" fill="#2563EB"/>
+    </marker>
+    <style>
+      .h{font-size:17px;font-weight:700;fill:#FFFFFF}
+      .hd{font-size:17px;font-weight:700;fill:#0F172A}
+      .s{font-size:13px;fill:#93C5FD}
+      .sd{font-size:13px;fill:#64748B}
+      .lbl{font-size:12.5px;fill:#1D4ED8;font-weight:700}
+      .mono{font-family:Consolas,monospace;font-size:12px;fill:#0F172A}
+      .title{font-size:26px;font-weight:700;fill:#0F172A}
+      .kick{font-size:13px;font-weight:700;fill:#2563EB;letter-spacing:3px}
+    </style>
+  </defs>
+
+  <rect width="1480" height="840" fill="#F1F5F9"/>
+  <rect x="0" y="0" width="10" height="840" fill="#2563EB"/>
+
+  <text x="48" y="52" class="kick">REPRODUCIBLE FROM THE REPO</text>
+  <text x="48" y="86" class="title">Nginx on kubeadm — Access, TLS &amp; GitOps</text>
+
+  <!-- ===== Cluster boundary ===== -->
+  <rect x="360" y="150" width="760" height="540" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="384" y="180" class="lbl">KUBEADM CLUSTER</text>
+
+  <!-- Control plane -->
+  <rect x="392" y="200" width="320" height="150" rx="10" fill="#0F172A"/>
+  <text x="416" y="234" class="h">Control plane</text>
+  <text x="416" y="262" class="s">kube-apiserver</text>
+  <text x="416" y="284" class="s">etcd · scheduler</text>
+  <text x="416" y="306" class="s">controller-manager</text>
+  <circle cx="676" cy="226" r="6" fill="#2563EB"/>
+
+  <!-- Worker / app namespace -->
+  <rect x="392" y="372" width="690" height="290" rx="10" fill="#1E3A8A"/>
+  <text x="416" y="406" class="h">Worker node · nginx-app namespace</text>
+  <text x="416" y="430" class="s">kubelet · containerd · Calico CNI</text>
+
+  <!-- nginx pods -->
+  <rect x="416" y="452" width="300" height="120" rx="8" fill="#FFFFFF"/>
+  <text x="436" y="482" class="hd">Nginx Deployment</text>
+  <text x="436" y="506" class="sd">2 replicas · non-root · read-only FS</text>
+  <text x="436" y="528" class="sd">listens on :8443 (TLS)</text>
+  <text x="436" y="552" class="mono">mounts secret: nginx-tls</text>
+
+  <!-- NodePort -->
+  <rect x="740" y="452" width="320" height="120" rx="8" fill="#FFFFFF"/>
+  <text x="760" y="482" class="hd">NodePort Service</text>
+  <text x="760" y="506" class="sd">port 443 → targetPort 8443</text>
+  <text x="760" y="530" class="mono">https://&lt;node-ip&gt;:30443</text>
+  <line x1="716" y1="512" x2="740" y2="512" stroke="#1D4ED8" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- cert-manager inside cluster -->
+  <rect x="416" y="590" width="300" height="56" rx="8" fill="#0F172A"/>
+  <text x="436" y="616" class="h">cert-manager</text>
+  <text x="436" y="636" class="s">internal CA · issues + auto-renews</text>
+
+  <!-- Argo CD inside cluster -->
+  <rect x="740" y="590" width="320" height="56" rx="8" fill="#0F172A"/>
+  <text x="760" y="616" class="h">Argo CD</text>
+  <text x="760" y="636" class="s">reconciles nginx/ · prune + self-heal</text>
+
+  <!-- cert-manager -> nginx pod (issues TLS) -->
+  <path d="M512,590 L512,572" stroke="#2563EB" stroke-width="2.5" fill="none" marker-end="url(#arrowT)"/>
+  <text x="520" y="586" font-size="11" fill="#1E40AF" font-weight="700">TLS secret</text>
+
+  <!-- Argo CD -> nginx deployment (applies) -->
+  <path d="M820,590 C820,560 660,560 600,572" stroke="#2563EB" stroke-width="2" fill="none" stroke-dasharray="4 3" marker-end="url(#arrowT)"/>
+
+  <!-- ===== Left: User / CSR onboarding ===== -->
+  <rect x="48" y="200" width="270" height="250" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="70" y="230" class="lbl">USER ONBOARDING (CSR)</text>
+  <rect x="70" y="248" width="226" height="44" rx="6" fill="#F1F5F9" stroke="#E2E8F0"/>
+  <text x="84" y="269" class="mono">1 · openssl key + CSR</text>
+  <text x="84" y="285" class="sd" font-size="11">CN=user, O=group (local)</text>
+  <rect x="70" y="300" width="226" height="40" rx="6" fill="#F1F5F9" stroke="#E2E8F0"/>
+  <text x="84" y="325" class="mono">2 · CertificateSigningRequest</text>
+  <rect x="70" y="348" width="226" height="40" rx="6" fill="#F1F5F9" stroke="#E2E8F0"/>
+  <text x="84" y="373" class="mono">3 · approve → signed cert</text>
+  <rect x="70" y="396" width="226" height="40" rx="6" fill="#F1F5F9" stroke="#E2E8F0"/>
+  <text x="84" y="421" class="mono">4 · kubeconfig + Role</text>
+
+  <!-- user -> api server (authenticated) -->
+  <path d="M318,300 C345,300 345,250 392,250" stroke="#1D4ED8" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="318" y="244" font-size="11.5" fill="#1D4ED8" font-weight="700">client cert auth</text>
+  <text x="318" y="338" font-size="11" fill="#64748B">least-privilege</text>
+  <text x="318" y="354" font-size="11" fill="#64748B">RBAC (1 namespace)</text>
+
+  <!-- ===== Bottom-left: Git repo ===== -->
+  <rect x="48" y="500" width="270" height="120" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="70" y="530" class="lbl">GIT REPOSITORY</text>
+  <text x="70" y="558" class="sd">cluster/ · rbac/ · cert-manager/</text>
+  <text x="70" y="580" class="sd">nginx/ · gitops/</text>
+  <text x="70" y="604" class="mono">source of truth</text>
+  <!-- git -> argo -->
+  <path d="M318,560 C420,560 560,590 740,612" stroke="#2563EB" stroke-width="2.5" fill="none" marker-end="url(#arrowT)"/>
+  <text x="430" y="600" font-size="11.5" fill="#1E40AF" font-weight="700">GitOps sync</text>
+
+  <!-- ===== Right: Browser ===== -->
+  <rect x="1160" y="452" width="272" height="120" rx="12" fill="#0F172A"/>
+  <text x="1182" y="484" class="h">Browser / client</text>
+  <text x="1182" y="510" class="s">HTTPS over NodePort</text>
+  <text x="1182" y="534" class="s" font-family="Consolas,monospace">curl -k https://node:30443</text>
+  <text x="1182" y="556" class="s">validates cert ↦ internal CA</text>
+  <!-- service -> browser -->
+  <path d="M1060,512 L1160,512" stroke="#1D4ED8" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- ===== Legend ===== -->
+  <rect x="360" y="712" width="760" height="86" rx="10" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <text x="384" y="740" class="lbl">TWO CERTIFICATE SYSTEMS</text>
+  <circle cx="392" cy="762" r="6" fill="#1D4ED8"/>
+  <text x="408" y="767" font-size="13" fill="#1E293B">Client auth — who can talk to the API (CSR-signed user certs)</text>
+  <circle cx="392" cy="784" r="6" fill="#2563EB"/>
+  <text x="408" y="789" font-size="13" fill="#1E293B">Server auth — TLS for the website (cert-manager-issued server cert)</text>
+</svg>

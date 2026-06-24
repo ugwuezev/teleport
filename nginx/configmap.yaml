@@ -1,0 +1,39 @@
+# Nginx TLS config + landing page. Listens on 8443 so the container runs non-root.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: nginx-app
+data:
+  default.conf: |
+    server {
+        listen       8443 ssl;
+        server_name  nginx.teleport.demo;
+
+        ssl_certificate     /etc/nginx/tls/tls.crt;
+        ssl_certificate_key /etc/nginx/tls/tls.key;
+        ssl_protocols       TLSv1.2 TLSv1.3;
+        ssl_ciphers         HIGH:!aNULL:!MD5;
+
+        location / {
+            root  /usr/share/nginx/html;
+            index index.html;
+        }
+        location = /healthz {
+            return 200 'ok';
+            add_header Content-Type text/plain;
+        }
+    }
+  index.html: |
+    <!doctype html>
+    <html>
+      <head><title>Nginx on kubeadm</title></head>
+      <body style="font-family:sans-serif;max-width:640px;margin:4rem auto">
+        <h1>Nginx on kubeadm, served over TLS</h1>
+        <p>This page is served by Nginx running in the <code>nginx-app</code>
+           namespace. The certificate was issued automatically by
+           <strong>cert-manager</strong> from an internal CA, and access to
+           deploy it was granted via a Kubernetes <strong>CSR-based</strong>
+           client certificate with least-privilege RBAC.</p>
+      </body>
+    </html>

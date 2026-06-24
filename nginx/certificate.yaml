@@ -1,0 +1,24 @@
+# cert-manager issues the Nginx server cert into Secret 'nginx-tls' (mounted by the Deployment).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nginx-tls
+  namespace: nginx-app
+spec:
+  secretName: nginx-tls
+  duration: 2160h        # 90 days
+  renewBefore: 360h      # renew 15 days before expiry
+  commonName: nginx.teleport.demo
+  dnsNames:
+    - nginx.teleport.demo
+    - nginx.nginx-app.svc.cluster.local
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  usages:
+    - server auth
+  issuerRef:
+    name: internal-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
